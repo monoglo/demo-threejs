@@ -7,6 +7,11 @@
 <script>
 // @ is an alias to /src
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// import { GUI } from 'three/examples/jsm/libs/dat.gui.module.js'
+// import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls.js'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { AmbientLight } from 'three'
 export default {
   name: 'Home',
   data: () => ({
@@ -25,25 +30,65 @@ export default {
         1000
       )
 
-      var renderer = new THREE.WebGLRenderer()
-      renderer.setSize(window.innerWidth / 2, window.innerHeight / 2)
+      const renderer = new THREE.WebGLRenderer({ antialias: true })
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setClearColor('#e5e5e5')
+
       document.body.appendChild(renderer.domElement)
-      var geometry = new THREE.BoxGeometry(1, 1, 1)
-      var material = new THREE.MeshBasicMaterial({
-        color: 0x00ff00
+
+      window.addEventListener('resize', () => {
+        renderer.setSize(window.innerWidth, window.innerHeight)
+
+        camera.aspect = window.innerWidth / window.innerHeight
+        camera.updateProjectionMatrix()
       })
-      var cube = new THREE.Mesh(geometry, material)
-      scene.add(cube)
 
       camera.position.z = 5
 
-      function animate() {
-        requestAnimationFrame(animate)
-        cube.rotation.x += 0.01
-        cube.rotation.y += 0.02
+      const hlight = new AmbientLight(0xFFFFFF)
+      scene.add(hlight)
+      // 灯光
+      const light = new THREE.PointLight(0xFFFFFF, 5, 3000)
+      light.position.set(25, 0, 100)
+      scene.add(light)
+
+      const loader = new GLTFLoader()
+      loader.load(
+        `${process.env.BASE_URL}models/donutandcupwithoutlight.gltf`,
+        gltf => {
+          scene.add(gltf.scene)
+        },
+        undefined,
+        function(error) {
+          console.error(error)
+        }
+      )
+
+      // 创建控制器
+      const controls = new OrbitControls(camera, renderer.domElement)
+      // controls.minDistance = 0
+      // controls.maxDistance = 300
+
+      // GUI 面板
+      // var propsLocal = {
+      //   get Enabled() {
+      //     return renderer.localClippingEnabled
+      //   },
+      //   set Enabled(v) {
+      //     renderer.localClippingEnabled = v
+      //   }
+      // }
+
+      // var gui = new GUI()
+      // var folderLocal = gui.addFolder('Local Clipping')
+      // folderLocal.add(propsLocal, 'Enabled')
+
+      function render() {
+        requestAnimationFrame(render)
         renderer.render(scene, camera)
+        controls.update()
       }
-      animate()
+      render()
     }
   }
 }
