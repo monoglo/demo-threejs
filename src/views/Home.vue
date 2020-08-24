@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <span class="tooltip">{{tooltipText}}</span>
   </div>
 </template>
 
@@ -33,7 +34,8 @@ export default {
     renderPass: null,
     outlinePass: null,
     composer: null,
-    mouse: null
+    mouse: null,
+    tooltipText: 'Content 1'
   }),
   created() {
     this.initThreejs()
@@ -70,7 +72,7 @@ export default {
       const hlight = new AmbientLight(0xffffff)
       this.scene.add(hlight)
       // 灯光
-      const light = new THREE.PointLight(0xffffff, 5, 3000)
+      const light = new THREE.PointLight(0xffffff, 5, 100)
       light.position.set(25, 0, 100)
       this.scene.add(light)
 
@@ -193,6 +195,9 @@ export default {
     },
     // 鼠标移动事件
     onTouchMove(event) {
+      var tooltip = document.querySelectorAll('.tooltip')
+      tooltip[0].style.left = event.pageX + 'px'
+      tooltip[0].style.top = event.pageY + 'px'
       this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1
       this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
 
@@ -203,10 +208,47 @@ export default {
       if (intersects.length > 0) {
         var selectedObject = intersects[0].object
         this.outlinePass.selectedObjects = [selectedObject]
+        // console.info(selectedObject.id)
+        switch (selectedObject.id) {
+          case 24: this.tooltipText = '桌布'; break
+          case 23: this.tooltipText = '碟子'; break
+          case 810: this.tooltipText = '茶杯'; break
+          case 813: this.tooltipText = '红茶'; break
+          case 811: this.tooltipText = '茶杯内壁的水滴'; break
+          case 814: this.tooltipText = '甜甜圈的面包'; break
+          case 815: this.tooltipText = '甜甜圈的冰激凌'; break
+          default: this.tooltipText = '未知?七彩米'; break
+        }
+        tooltip[0].style.display = 'block'
       } else {
         this.outlinePass.selectedObjects = []
+        tooltip[0].style.display = 'none'
       }
     }
   }
 }
 </script>
+
+<style>
+body {
+  margin: 0;
+}
+
+canvas {
+  display: block;
+}
+.tooltip {
+  display: none;
+  background: #c8c8c8;
+  margin-left: 28px;
+  padding: 10px;
+  position: absolute;
+  z-index: 1000;
+  /* width: 80px;
+  height: 25px; */
+}
+
+.couponcode {
+  margin: 100px;
+}
+</style>
