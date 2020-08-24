@@ -66,7 +66,9 @@ export default {
       })
 
       // 相机位置
-      this.camera.position.z = 1
+      this.camera.position.x = 1
+      this.camera.position.z = 0
+      this.camera.position.y = 1.5
 
       // 环境光
       const hlight = new AmbientLight(0xffffff)
@@ -132,6 +134,8 @@ export default {
         // 拖拽过程中止监听鼠标移动，锁定边缘高亮物体
         window.removeEventListener('mousemove', this.onTouchMove)
         window.removeEventListener('touchmove', this.onTouchMove)
+        var tooltip = document.querySelectorAll('.tooltip')
+        tooltip[0].style.display = 'none'
         // if (this.selectedEdge != null) {
         //   this.scene.remove(this.selectedEdge)
         // }
@@ -255,6 +259,7 @@ canvas {
 }
 
 .tooltip {
+  pointer-events:none;
   display: none;
   background: #c8c8c8;
   margin-left: 28px;
