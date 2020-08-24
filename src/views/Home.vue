@@ -210,14 +210,30 @@ export default {
         this.outlinePass.selectedObjects = [selectedObject]
         // console.info(selectedObject.id)
         switch (selectedObject.id) {
-          case 24: this.tooltipText = '桌布'; break
-          case 23: this.tooltipText = '碟子'; break
-          case 810: this.tooltipText = '茶杯'; break
-          case 813: this.tooltipText = '红茶'; break
-          case 811: this.tooltipText = '茶杯内壁的水滴'; break
-          case 814: this.tooltipText = '甜甜圈的面包'; break
-          case 815: this.tooltipText = '甜甜圈的冰激凌'; break
-          default: this.tooltipText = '未知?七彩米'; break
+          case 24:
+            this.tooltipText = '桌布'
+            break
+          case 23:
+            this.tooltipText = '碟子'
+            break
+          case 810:
+            this.tooltipText = '茶杯'
+            break
+          case 813:
+            this.tooltipText = '红茶'
+            break
+          case 811:
+            this.tooltipText = '茶杯内壁的水滴'
+            break
+          case 814:
+            this.tooltipText = '甜甜圈的面包'
+            break
+          case 815:
+            this.tooltipText = '甜甜圈的冰激凌'
+            break
+          default:
+            this.tooltipText = '未知?七彩米'
+            break
         }
         tooltip[0].style.display = 'block'
       } else {
@@ -237,6 +253,7 @@ body {
 canvas {
   display: block;
 }
+
 .tooltip {
   display: none;
   background: #c8c8c8;
@@ -246,9 +263,5 @@ canvas {
   z-index: 1000;
   /* width: 80px;
   height: 25px; */
-}
-
-.couponcode {
-  margin: 100px;
 }
 </style>
