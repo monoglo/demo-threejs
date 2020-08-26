@@ -1,7 +1,8 @@
 <template>
   <div class="home">
+    <button @click="drink()">喝茶</button>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <span class="tooltip">{{tooltipText}}</span>
+    <span class="tooltip">{{ tooltipText }}</span>
   </div>
 </template>
 
@@ -78,7 +79,7 @@ export default {
       light.position.set(25, 0, 100)
       this.scene.add(light)
 
-      // GLTF加载器
+      // GLTF加载器加载GLTF资源
       const loader = new GLTFLoader()
       loader.load(
         `${process.env.BASE_URL}models/donutandcupwithoutlight.gltf`,
@@ -108,12 +109,12 @@ export default {
       // console.info(this.outlinePass)
       // console.info(this.composer)
 
-      // Orbit控制器
+      // 生成Orbit控制器
       this.orbitControls = new OrbitControls(
         this.camera,
         this.renderer.domElement
       )
-      // 配置按键
+      // 配置Orbit控制器按键
       this.orbitControls.mouseButtons = {
         LEFT: THREE.MOUSE.PAN,
         // MIDDLE: THREE.MOUSE.DOLLY,
@@ -136,19 +137,6 @@ export default {
         window.removeEventListener('touchmove', this.onTouchMove)
         var tooltip = document.querySelectorAll('.tooltip')
         tooltip[0].style.display = 'none'
-        // if (this.selectedEdge != null) {
-        //   this.scene.remove(this.selectedEdge)
-        // }
-        // console.info('dragstart')
-        // this.selectedObject = event.object
-        // var geometry = new THREE.WireframeGeometry(this.selectedObject.geometry)
-
-        // var material = new THREE.LineBasicMaterial({ color: 0x111111 })
-
-        // this.selectedEdge = new THREE.LineSegments(geometry, material)
-
-        // this.outlinePass.selectedObjects = [event.object]
-        // console.info(this.outlinePass.selectedObjects)
       })
       // 拖拽过程结束，启用轮廓生成，启用Orbit控制器
       this.dragControls.addEventListener('dragend', event => {
@@ -159,8 +147,11 @@ export default {
         // this.selectedEdge.position.z = event.object.position.z
         window.addEventListener('mousemove', this.onTouchMove)
         window.addEventListener('touchmove', this.onTouchMove)
+        this.onHover(event)
         this.orbitControls.enabled = true
       })
+      this.dragControls.addEventListener('hoveron', this.onHover)
+      this.dragControls.addEventListener('hoveroff', this.onHoverOff)
 
       // 边缘高亮选择配置
       // 鼠标二维坐标
@@ -202,48 +193,48 @@ export default {
       var tooltip = document.querySelectorAll('.tooltip')
       tooltip[0].style.left = event.pageX + 'px'
       tooltip[0].style.top = event.pageY + 'px'
-      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-      this.raycaster.setFromCamera(this.mouse, this.camera)
-
-      var intersects = this.raycaster.intersectObjects([this.scene], true)
-
-      if (intersects.length > 0) {
-        var selectedObject = intersects[0].object
-        this.outlinePass.selectedObjects = [selectedObject]
-        // console.info(selectedObject.id)
-        switch (selectedObject.id) {
-          case 24:
-            this.tooltipText = '桌布'
-            break
-          case 23:
-            this.tooltipText = '碟子'
-            break
-          case 810:
-            this.tooltipText = '茶杯'
-            break
-          case 813:
-            this.tooltipText = '红茶'
-            break
-          case 811:
-            this.tooltipText = '茶杯内壁的水滴'
-            break
-          case 814:
-            this.tooltipText = '甜甜圈的面包'
-            break
-          case 815:
-            this.tooltipText = '甜甜圈的冰激凌'
-            break
-          default:
-            this.tooltipText = '未知?七彩米'
-            break
-        }
-        tooltip[0].style.display = 'block'
-      } else {
-        this.outlinePass.selectedObjects = []
-        tooltip[0].style.display = 'none'
+    },
+    onHover(event) {
+      var tooltip = document.querySelectorAll('.tooltip')
+      this.outlinePass.selectedObjects = [event.object]
+      // console.info(selectedObject.id)
+      switch (event.object.id) {
+        case 24:
+          this.tooltipText = '桌布'
+          break
+        case 23:
+          this.tooltipText = '碟子'
+          break
+        case 810:
+          this.tooltipText = '茶杯'
+          break
+        case 813:
+          this.tooltipText = '红茶'
+          break
+        case 811:
+          this.tooltipText = '茶杯内壁的水滴'
+          break
+        case 814:
+          this.tooltipText = '甜甜圈的面包'
+          break
+        case 815:
+          this.tooltipText = '甜甜圈的冰激凌'
+          break
+        default:
+          this.tooltipText = '未知?七彩米'
+          break
       }
+      tooltip[0].style.display = 'block'
+    },
+    onHoverOff(event) {
+      var tooltip = document.querySelectorAll('.tooltip')
+      this.outlinePass.selectedObjects = []
+      tooltip[0].style.display = 'none'
+    },
+    drink() {
+      this.scene.getObjectById(813).visible = !this.scene.getObjectById(813)
+        .visible
+      console.info(this.dragControls.getObjects())
     }
   }
 }
@@ -259,7 +250,7 @@ canvas {
 }
 
 .tooltip {
-  pointer-events:none;
+  pointer-events: none;
   display: none;
   background: #c8c8c8;
   margin-left: 28px;
