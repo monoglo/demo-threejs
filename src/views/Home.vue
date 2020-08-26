@@ -36,7 +36,9 @@ export default {
     outlinePass: null,
     composer: null,
     mouse: null,
-    tooltipText: 'Content 1'
+    tooltipText: 'Content 1',
+    textSprite: null,
+    count: 0
   }),
   created() {
     this.initThreejs()
@@ -87,6 +89,19 @@ export default {
           // console.info(gltf)
           this.scene.add(gltf.scene)
           this.objects.push(gltf.scene)
+          // 精灵材质
+          this.textSprite = this.makeTextSprite('Iloveyou', {
+            borderThickness: 1,
+            fontsize: 30
+          })
+          // textSprite.scale.set(100, 100, 100)
+          // textSprite.position.set(this.scene.getObjectById(23).position)
+          this.scene.add(this.textSprite)
+          // console.info(this.textSprite.position)
+          this.textSprite.position.copy(this.scene.getObjectById(23).position)
+          // console.info(this.scene.getObjectById(23).position)
+          // this.scene.getObjectById(23).add(textSprite)
+          // console.info(this.scene.getObjectById(23))
         },
         undefined,
         function(error) {
@@ -186,6 +201,23 @@ export default {
       requestAnimationFrame(this.render)
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
+      if (this.textSprite) {
+        this.textSprite.position.set(
+          this.scene.getObjectById(23).position.x,
+          this.scene.getObjectById(23).position.y,
+          this.scene.getObjectById(23).position.z
+        )
+        // console.info(this.textSprite)
+        this.textSprite.material = this.makeTextSpriteMaterial(
+          'Iloveyou' + this.count,
+          {
+            borderThickness: 1,
+            fontsize: 30
+          }
+        )
+
+        this.count += 1
+      }
       this.composer.render()
     },
     // 鼠标移动事件
@@ -235,6 +267,128 @@ export default {
       this.scene.getObjectById(813).visible = !this.scene.getObjectById(813)
         .visible
       console.info(this.dragControls.getObjects())
+    },
+    roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath()
+      ctx.moveTo(x + r, y)
+      ctx.lineTo(x + w - r, y)
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+      ctx.lineTo(x + w, y + h - r)
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+      ctx.lineTo(x + r, y + h)
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+      ctx.lineTo(x, y + r)
+      ctx.quadraticCurveTo(x, y, x + r, y)
+      ctx.closePath()
+      ctx.fill()
+      ctx.stroke()
+    },
+    makeTextSpriteMaterial(message, parameters) {
+      if (parameters === undefined) parameters = {}
+      var fontface = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'fontface'
+      )
+        ? parameters.fontface
+        : 'Arial'
+      var fontsize = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'fontsize'
+      )
+        ? parameters.fontsize
+        : 18
+      var borderThickness = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'borderThickness'
+      )
+        ? parameters.borderThickness
+        : 4
+      var borderColor = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'borderColor'
+      )
+        ? parameters.borderColor
+        : { r: 0, g: 0, b: 0, a: 1.0 }
+      var backgroundColor = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'backgroundColor'
+      )
+        ? parameters.backgroundColor
+        : { r: 255, g: 255, b: 255, a: 1.0 }
+      var textColor = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'textColor'
+      )
+        ? parameters.textColor
+        : { r: 0, g: 0, b: 0, a: 1.0 }
+
+      var canvas = document.createElement('canvas')
+      var context = canvas.getContext('2d')
+      context.font = 'Bold ' + fontsize + 'px ' + fontface
+      var metrics = context.measureText(message)
+      var textWidth = metrics.width
+
+      context.fillStyle =
+        'rgba(' +
+        backgroundColor.r +
+        ',' +
+        backgroundColor.g +
+        ',' +
+        backgroundColor.b +
+        ',' +
+        backgroundColor.a +
+        ')'
+      context.strokeStyle =
+        'rgba(' +
+        borderColor.r +
+        ',' +
+        borderColor.g +
+        ',' +
+        borderColor.b +
+        ',' +
+        borderColor.a +
+        ')'
+
+      context.lineWidth = borderThickness
+      this.roundRect(
+        context,
+        borderThickness / 2,
+        borderThickness / 2,
+        (textWidth + borderThickness) * 1.1,
+        fontsize * 1.4 + borderThickness,
+        8
+      )
+
+      context.fillStyle =
+        'rgba(' +
+        textColor.r +
+        ', ' +
+        textColor.g +
+        ', ' +
+        textColor.b +
+        ', 1.0)'
+      context.fillText(message, borderThickness, fontsize + borderThickness)
+
+      var texture = new THREE.Texture(canvas)
+      texture.needsUpdate = true
+
+      return new THREE.SpriteMaterial({
+        map: texture,
+        useScreenCoordinates: false
+      })
+    },
+    makeTextSprite(message, parameters) {
+      var sprite = new THREE.Sprite(
+        this.makeTextSpriteMaterial(message, parameters)
+      )
+      var fontsize = Object.prototype.hasOwnProperty.call(
+        parameters,
+        'fontsize'
+      )
+        ? parameters.fontsize
+        : 18
+      sprite.scale.set(0.05 * fontsize, 0.025 * fontsize, 0.01)
+      return sprite
     }
   }
 }
