@@ -2,6 +2,7 @@
   <div class="home">
     <button @click="drink()">喝茶</button>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
+    <div id="ThreeJS" style="position: relative;"></div>
     <span class="tooltip">{{ tooltipText }}</span>
   </div>
 </template>
@@ -20,6 +21,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
 import { AmbientLight } from 'three'
+import Stats from 'stats.js'
 export default {
   name: 'Home',
   data: () => ({
@@ -38,9 +40,10 @@ export default {
     mouse: null,
     tooltipText: 'Content 1',
     textSprite: null,
-    count: 0
+    count: 0,
+    stats: null
   }),
-  created() {
+  mounted() {
     this.initThreejs()
   },
   methods: {
@@ -59,7 +62,8 @@ export default {
       this.renderer = new THREE.WebGLRenderer({ antialias: true })
       this.renderer.setSize(window.innerWidth, window.innerHeight)
       this.renderer.setClearColor('#e5e5e5')
-      document.body.appendChild(this.renderer.domElement)
+      // console.info(document.getElementById('ThreeJS'))
+      document.getElementById('ThreeJS').appendChild(this.renderer.domElement)
 
       // 重置大小监听设置
       window.addEventListener('resize', () => {
@@ -177,6 +181,11 @@ export default {
       window.addEventListener('mousemove', this.onTouchMove)
       window.addEventListener('touchmove', this.onTouchMove)
 
+      this.stats = new Stats()
+      this.stats.showPanel(0)
+      this.stats.domElement.style.cssText = 'position:absolute;top:0px;left:0px;'
+      document.getElementById('ThreeJS').appendChild(this.stats.dom)
+
       // controls.minDistance = 0
       // controls.maxDistance = 300
 
@@ -198,7 +207,7 @@ export default {
     },
     // 循环渲染
     render() {
-      requestAnimationFrame(this.render)
+      this.stats.begin()
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
       if (this.textSprite) {
@@ -219,6 +228,8 @@ export default {
         this.count += 1
       }
       this.composer.render()
+      this.stats.end()
+      requestAnimationFrame(this.render)
     },
     // 鼠标移动事件
     onTouchMove(event) {
@@ -325,9 +336,11 @@ export default {
       var canvas = document.createElement('canvas')
       var context = canvas.getContext('2d')
       context.font = 'Bold ' + fontsize + 'px ' + fontface
+      // get size data (height depends only on font size)
       var metrics = context.measureText(message)
       var textWidth = metrics.width
 
+      // background color
       context.fillStyle =
         'rgba(' +
         backgroundColor.r +
@@ -338,6 +351,7 @@ export default {
         ',' +
         backgroundColor.a +
         ')'
+      // border color
       context.strokeStyle =
         'rgba(' +
         borderColor.r +
@@ -354,10 +368,12 @@ export default {
         context,
         borderThickness / 2,
         borderThickness / 2,
-        (textWidth + borderThickness) * 1.1,
+        textWidth + borderThickness,
         fontsize * 1.4 + borderThickness,
-        8
+        6
       )
+      // 1.4 is extra height factor for text below baseline: g,j,p,q.
+      // text color
 
       context.fillStyle =
         'rgba(' +
@@ -369,12 +385,12 @@ export default {
         ', 1.0)'
       context.fillText(message, borderThickness, fontsize + borderThickness)
 
+      // canvas contents will be used for a texture
       var texture = new THREE.Texture(canvas)
       texture.needsUpdate = true
 
       return new THREE.SpriteMaterial({
-        map: texture,
-        useScreenCoordinates: false
+        map: texture
       })
     },
     makeTextSprite(message, parameters) {
