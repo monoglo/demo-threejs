@@ -202,7 +202,7 @@ export default {
       this.stats.showPanel(0)
       this.stats.domElement.style.cssText =
         'position:absolute;top:0px;left:0px;'
-      // document.getElementById('ThreeJS').appendChild(this.stats.dom)
+      document.getElementById('ThreeJS').appendChild(this.stats.dom)
 
       // controls.minDistance = 0
       // controls.maxDistance = 300
@@ -228,23 +228,11 @@ export default {
       this.stats.begin()
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
-      // if (this.textSprite) {
-      //   this.textSprite.position.set(
-      //     this.scene.getObjectById(23).position.x,
-      //     this.scene.getObjectById(23).position.y,
-      //     this.scene.getObjectById(23).position.z
-      //   )
-      //   // console.info(this.textSprite)
-      //   this.textSprite.material = this.makeTextSpriteMaterial(
-      //     '我爱你' + this.count,
-      //     {
-      //       borderThickness: 1,
-      //       fontsize: 30
-      //     }
-      //   )
-
-      //   this.count += 1
-      // }
+      if (this.lableDiv) {
+        this.lableDiv.textContent = 'Iloveyou' + this.count
+        this.nameLabel.position.copy(this.scene.getObjectById(23).position)
+        this.count += 1
+      }
       this.composer.render()
       if (this.labelRenderer) {
         this.labelRenderer.render(this.scene, this.camera)
