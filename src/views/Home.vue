@@ -20,6 +20,10 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
+import {
+  CSS2DRenderer,
+  CSS2DObject
+} from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 import { AmbientLight } from 'three'
 import Stats from 'stats.js'
 export default {
@@ -33,15 +37,18 @@ export default {
     camera: null,
     objects: [],
     selectedObject: null,
-    selectedEdge: null,
     renderPass: null,
     outlinePass: null,
     composer: null,
     mouse: null,
     tooltipText: 'Content 1',
     textSprite: null,
+    css2dLabel: null,
+    labelRenderer: null,
     count: 0,
-    stats: null
+    stats: null,
+    lableDiv: null,
+    nameLabel: null
   }),
   mounted() {
     this.initThreejs()
@@ -94,18 +101,30 @@ export default {
           this.scene.add(gltf.scene)
           this.objects.push(gltf.scene)
           // 精灵材质
-          this.textSprite = this.makeTextSprite('Iloveyou', {
-            borderThickness: 1,
-            fontsize: 30
-          })
-          // textSprite.scale.set(100, 100, 100)
-          // textSprite.position.set(this.scene.getObjectById(23).position)
-          this.scene.add(this.textSprite)
-          // console.info(this.textSprite.position)
-          this.textSprite.position.copy(this.scene.getObjectById(23).position)
-          // console.info(this.scene.getObjectById(23).position)
-          // this.scene.getObjectById(23).add(textSprite)
-          // console.info(this.scene.getObjectById(23))
+          // this.textSprite = this.makeTextSprite('我爱你', {
+          //   borderThickness: 1,
+          //   fontsize: 30
+          // })
+          // this.scene.add(this.textSprite)
+          // this.textSprite.position.copy(this.scene.getObjectById(23).position)
+
+          // CSS2DRender
+          this.lableDiv = document.createElement('div')
+          this.lableDiv.className = 'label'
+          this.lableDiv.textContent = 'Moonklhndjshfijashdfn'
+
+          this.nameLabel = new CSS2DObject(this.lableDiv)
+          this.nameLabel.position.copy(this.scene.getObjectById(23).position)
+          this.scene.add(this.nameLabel)
+
+          this.labelRenderer = new CSS2DRenderer()
+          this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+          this.labelRenderer.domElement.style.position = 'absolute'
+          this.labelRenderer.domElement.style.top = 0
+          this.labelRenderer.domElement.style.pointerEvents = 'none'
+          document
+            .getElementById('ThreeJS')
+            .appendChild(this.labelRenderer.domElement)
         },
         undefined,
         function(error) {
@@ -154,16 +173,13 @@ export default {
         // 拖拽过程中止监听鼠标移动，锁定边缘高亮物体
         window.removeEventListener('mousemove', this.onTouchMove)
         window.removeEventListener('touchmove', this.onTouchMove)
+        // 拖拽过程中使提示标签不可见
         var tooltip = document.querySelectorAll('.tooltip')
         tooltip[0].style.display = 'none'
       })
       // 拖拽过程结束，启用轮廓生成，启用Orbit控制器
       this.dragControls.addEventListener('dragend', event => {
         // event.object.material.emissive.set(0x000000)
-        // console.info('dragend')
-        // this.selectedEdge.position.x = event.object.position.x
-        // this.selectedEdge.position.y = event.object.position.y
-        // this.selectedEdge.position.z = event.object.position.z
         window.addEventListener('mousemove', this.onTouchMove)
         window.addEventListener('touchmove', this.onTouchMove)
         this.onHover(event)
@@ -181,10 +197,12 @@ export default {
       window.addEventListener('mousemove', this.onTouchMove)
       window.addEventListener('touchmove', this.onTouchMove)
 
+      // FPS 监控
       this.stats = new Stats()
       this.stats.showPanel(0)
-      this.stats.domElement.style.cssText = 'position:absolute;top:0px;left:0px;'
-      document.getElementById('ThreeJS').appendChild(this.stats.dom)
+      this.stats.domElement.style.cssText =
+        'position:absolute;top:0px;left:0px;'
+      // document.getElementById('ThreeJS').appendChild(this.stats.dom)
 
       // controls.minDistance = 0
       // controls.maxDistance = 300
@@ -210,24 +228,27 @@ export default {
       this.stats.begin()
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
-      if (this.textSprite) {
-        this.textSprite.position.set(
-          this.scene.getObjectById(23).position.x,
-          this.scene.getObjectById(23).position.y,
-          this.scene.getObjectById(23).position.z
-        )
-        // console.info(this.textSprite)
-        this.textSprite.material = this.makeTextSpriteMaterial(
-          'Iloveyou' + this.count,
-          {
-            borderThickness: 1,
-            fontsize: 30
-          }
-        )
+      // if (this.textSprite) {
+      //   this.textSprite.position.set(
+      //     this.scene.getObjectById(23).position.x,
+      //     this.scene.getObjectById(23).position.y,
+      //     this.scene.getObjectById(23).position.z
+      //   )
+      //   // console.info(this.textSprite)
+      //   this.textSprite.material = this.makeTextSpriteMaterial(
+      //     '我爱你' + this.count,
+      //     {
+      //       borderThickness: 1,
+      //       fontsize: 30
+      //     }
+      //   )
 
-        this.count += 1
-      }
+      //   this.count += 1
+      // }
       this.composer.render()
+      if (this.labelRenderer) {
+        this.labelRenderer.render(this.scene, this.camera)
+      }
       this.stats.end()
       requestAnimationFrame(this.render)
     },
@@ -429,5 +450,14 @@ canvas {
   z-index: 1000;
   /* width: 80px;
   height: 25px; */
+}
+
+.label {
+  color: #000;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-left: 28px;
+  padding: 10px;
+  position: absolute;
+  z-index: 2000;
 }
 </style>
