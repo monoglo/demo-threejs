@@ -48,7 +48,8 @@ export default {
     count: 0,
     stats: null,
     lableDiv: null,
-    nameLabel: null
+    nameLabel: null,
+    famenzhuan: false
   }),
   mounted() {
     this.initThreejs()
@@ -92,7 +93,7 @@ export default {
       // this.scene.add(hemilight)
       // 灯光
       const light = new THREE.PointLight(0xffffff, 5, 80)
-      light.position.set(-25, 5, 50)
+      light.position.set(-25, 5, 60)
       this.scene.add(light)
 
       this.scene.add(new THREE.AxesHelper(5))
@@ -126,6 +127,7 @@ export default {
           //   this.scene.getObjectByName('machine1').position.z
           // )
           this.scene.add(this.nameLabel)
+          // console.info(this.scene.getObjectById(51))
 
           this.labelRenderer = new CSS2DRenderer()
           this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
@@ -254,6 +256,9 @@ export default {
       if (this.labelRenderer) {
         this.labelRenderer.render(this.scene, this.camera)
       }
+      if (this.famenzhuan) {
+        this.scene.getObjectById(51).rotation.z += 0.1
+      }
       this.composer.render()
       this.stats.end()
       requestAnimationFrame(this.render)
@@ -297,11 +302,20 @@ export default {
       // }
       this.tooltipText = event.object.id
       tooltip[0].style.display = 'block'
+
+      if (event.object.id === 51) {
+        this.famenzhuan = true
+      } else {
+        this.famenzhuan = false
+      }
     },
     onHoverOff(event) {
       var tooltip = document.querySelectorAll('.tooltip')
       this.outlinePass.selectedObjects = []
       tooltip[0].style.display = 'none'
+      if (event.object.id === 51) {
+        this.famenzhuan = false
+      }
     },
     drink() {
       this.scene.getObjectById(813).visible = !this.scene.getObjectById(813)
