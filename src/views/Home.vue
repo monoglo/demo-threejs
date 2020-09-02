@@ -24,7 +24,7 @@ import {
   CSS2DRenderer,
   CSS2DObject
 } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
-import { AmbientLight } from 'three'
+// import { AmbientLight } from 'three'
 import Stats from 'stats.js'
 export default {
   name: 'Home',
@@ -80,22 +80,27 @@ export default {
       })
 
       // 相机位置
-      this.camera.position.x = 1
-      this.camera.position.z = 0
-      this.camera.position.y = 1.5
+      this.camera.position.x = -5
+      this.camera.position.z = 10
+      this.camera.position.y = 3
 
       // 环境光
-      const hlight = new AmbientLight(0xffffff)
+      const hlight = new THREE.AmbientLight(0xffffff, 1.4)
       this.scene.add(hlight)
+
+      // var hemilight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.5)
+      // this.scene.add(hemilight)
       // 灯光
-      const light = new THREE.PointLight(0xffffff, 5, 100)
-      light.position.set(25, 0, 100)
+      const light = new THREE.PointLight(0xffffff, 5, 80)
+      light.position.set(-25, 5, 50)
       this.scene.add(light)
+
+      this.scene.add(new THREE.AxesHelper(5))
 
       // GLTF加载器加载GLTF资源
       const loader = new GLTFLoader()
       loader.load(
-        `${process.env.BASE_URL}models/donutandcupwithoutlight.gltf`,
+        `${process.env.BASE_URL}models/tube.gltf`,
         gltf => {
           // console.info(gltf)
           this.scene.add(gltf.scene)
@@ -111,10 +116,15 @@ export default {
           // CSS2DRender
           this.lableDiv = document.createElement('div')
           this.lableDiv.className = 'label'
-          this.lableDiv.textContent = 'Moonklhndjshfijashdfn'
+          this.lableDiv.textContent = '初始化中'
 
           this.nameLabel = new CSS2DObject(this.lableDiv)
-          this.nameLabel.position.copy(this.scene.getObjectById(23).position)
+          // console.info(this.scene.getObjectByName('machine1'))
+          // this.nameLabel.position.set(
+          //   this.scene.getObjectByName('machine1').position.x,
+          //   this.scene.getObjectByName('machine1').position.y + 5,
+          //   this.scene.getObjectByName('machine1').position.z
+          // )
           this.scene.add(this.nameLabel)
 
           this.labelRenderer = new CSS2DRenderer()
@@ -229,14 +239,22 @@ export default {
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
       if (this.lableDiv) {
-        this.lableDiv.textContent = 'Iloveyou' + this.count
-        this.nameLabel.position.copy(this.scene.getObjectById(23).position)
+        if (this.count > 120) {
+          this.lableDiv.textContent =
+            '当前流量：' + (Math.random() * 1000).toFixed(2)
+          this.count = 0
+        }
+        this.nameLabel.position.set(
+          this.scene.getObjectByName('machine1').position.x - 0.3,
+          this.scene.getObjectByName('machine1').position.y + 1,
+          this.scene.getObjectByName('machine1').position.z
+        )
         this.count += 1
       }
-      this.composer.render()
       if (this.labelRenderer) {
         this.labelRenderer.render(this.scene, this.camera)
       }
+      this.composer.render()
       this.stats.end()
       requestAnimationFrame(this.render)
     },
@@ -247,35 +265,37 @@ export default {
       tooltip[0].style.top = event.pageY + 'px'
     },
     onHover(event) {
-      var tooltip = document.querySelectorAll('.tooltip')
       this.outlinePass.selectedObjects = [event.object]
-      // console.info(selectedObject.id)
-      switch (event.object.id) {
-        case 24:
-          this.tooltipText = '桌布'
-          break
-        case 23:
-          this.tooltipText = '碟子'
-          break
-        case 810:
-          this.tooltipText = '茶杯'
-          break
-        case 813:
-          this.tooltipText = '红茶'
-          break
-        case 811:
-          this.tooltipText = '茶杯内壁的水滴'
-          break
-        case 814:
-          this.tooltipText = '甜甜圈的面包'
-          break
-        case 815:
-          this.tooltipText = '甜甜圈的冰激凌'
-          break
-        default:
-          this.tooltipText = '未知?七彩米'
-          break
-      }
+      // console.info(event.object.id)
+      var tooltip = document.querySelectorAll('.tooltip')
+      // // console.info(selectedObject.id)
+      // switch (event.object.id) {
+      //   case 24:
+      //     this.tooltipText = '桌布'
+      //     break
+      //   case 23:
+      //     this.tooltipText = '碟子'
+      //     break
+      //   case 810:
+      //     this.tooltipText = '茶杯'
+      //     break
+      //   case 813:
+      //     this.tooltipText = '红茶'
+      //     break
+      //   case 811:
+      //     this.tooltipText = '茶杯内壁的水滴'
+      //     break
+      //   case 814:
+      //     this.tooltipText = '甜甜圈的面包'
+      //     break
+      //   case 815:
+      //     this.tooltipText = '甜甜圈的冰激凌'
+      //     break
+      //   default:
+      //     this.tooltipText = '未知?七彩米'
+      //     break
+      // }
+      this.tooltipText = event.object.id
       tooltip[0].style.display = 'block'
     },
     onHoverOff(event) {
