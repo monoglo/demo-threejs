@@ -92,7 +92,7 @@ export default {
       // var hemilight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.5)
       // this.scene.add(hemilight)
       // 灯光
-      const light = new THREE.PointLight(0xffffff, 5, 80)
+      const light = new THREE.PointLight(0xffffff, 5, 120)
       light.position.set(-25, 5, 60)
       this.scene.add(light)
 
@@ -128,6 +128,7 @@ export default {
           // )
           this.scene.add(this.nameLabel)
           // console.info(this.scene.getObjectById(51))
+          console.info(this.scene.getObjectById(50).material)
 
           this.labelRenderer = new CSS2DRenderer()
           this.labelRenderer.setSize(window.innerWidth, window.innerHeight)

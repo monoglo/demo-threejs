@@ -24,6 +24,16 @@ const routes = [
     name: 'ThreeJSRocks',
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/ThreeJSRocks.vue')
+  },
+  {
+    path: '/lab',
+    name: 'Lab',
+    component: () => import(/* webpackChunkName: "lab" */ '../views/Lab.vue')
+  },
+  {
+    path: '/chixi',
+    name: 'ChixiMap',
+    component: () => import(/* webpackChunkName: "lab" */ '../views/ChixiMap.vue')
   }
 ]
 
