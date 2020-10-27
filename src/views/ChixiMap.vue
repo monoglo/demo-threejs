@@ -92,9 +92,9 @@ export default {
       })
 
       // 相机位置
-      this.camera.position.x = -5
-      this.camera.position.z = 10
-      this.camera.position.y = 3
+      this.camera.position.x = -800
+      this.camera.position.z = 800
+      this.camera.position.y = 500
 
       // // 环境光
       // const hlight = new THREE.AmbientLight(0xffffff, 5)
@@ -236,8 +236,8 @@ export default {
       // })
 
       // 初次监听鼠标移动
-      window.addEventListener('mousemove', this.onTouchMove)
-      window.addEventListener('touchmove', this.onTouchMove)
+      // window.addEventListener('mousemove', this.onTouchMove)
+      // window.addEventListener('touchmove', this.onTouchMove)
 
       // FPS 监控
       this.stats = new Stats()
@@ -260,36 +260,36 @@ export default {
       this.stats.end()
       requestAnimationFrame(this.render)
     },
-    // 鼠标移动事件
-    onTouchMove(event) {
-      var tooltip = document.querySelectorAll('.tooltip')
-      tooltip[0].style.left = event.pageX + 'px'
-      tooltip[0].style.top = event.pageY + 'px'
-    },
-    onHover(event) {
-      // this.outlinePass.selectedObjects = [event.object]
-      // console.info(event.object.id)
-      // var tooltip = document.querySelectorAll('.tooltip')
-      // this.tooltipText = event.object.id
-      // tooltip[0].style.display = 'block'
-      // if (event.object.name === 'valve') {
-      //   this.famenzhuan = true
-      // } else {
-      //   this.famenzhuan = false
-      // }
-    },
-    onHoverOff(event) {
-      var tooltip = document.querySelectorAll('.tooltip')
-      // this.outlinePass.selectedObjects = []
-      tooltip[0].style.display = 'none'
-      if (event.object.name === 'valve') {
-        this.famenzhuan = false
-      }
-    },
+    // // 鼠标移动事件
+    // onTouchMove(event) {
+    //   var tooltip = document.querySelectorAll('.tooltip')
+    //   tooltip[0].style.left = event.pageX + 'px'
+    //   tooltip[0].style.top = event.pageY + 'px'
+    // },
+    // onHover(event) {
+    //   // this.outlinePass.selectedObjects = [event.object]
+    //   // console.info(event.object.id)
+    //   // var tooltip = document.querySelectorAll('.tooltip')
+    //   // this.tooltipText = event.object.id
+    //   // tooltip[0].style.display = 'block'
+    //   // if (event.object.name === 'valve') {
+    //   //   this.famenzhuan = true
+    //   // } else {
+    //   //   this.famenzhuan = false
+    //   // }
+    // },
+    // onHoverOff(event) {
+    //   var tooltip = document.querySelectorAll('.tooltip')
+    //   // this.outlinePass.selectedObjects = []
+    //   tooltip[0].style.display = 'none'
+    //   if (event.object.name === 'valve') {
+    //     this.famenzhuan = false
+    //   }
+    // },
     getCubeMapTexture() {
       return new Promise((resolve, reject) => {
         new RGBELoader().setDataType(THREE.UnsignedByteType).load(
-          `${process.env.BASE_URL}environment/footprint_court_2k.hdr`,
+          `${process.env.BASE_URL}environment/venice_sunset_1k.hdr`,
           texture => {
             const envMap = this.pmremGenerator.fromEquirectangular(texture)
               .texture
