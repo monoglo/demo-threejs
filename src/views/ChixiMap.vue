@@ -20,12 +20,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 // // import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js'
 // // import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js'
 // import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js'
-// import {
-//   CSS2DRenderer,
-//   CSS2DObject
-// } from 'three/examples/jsm/renderers/CSS2DRenderer.js'
+import {
+  CSS2DRenderer,
+  CSS2DObject
+} from 'three/examples/jsm/renderers/CSS2DRenderer.js'
 // import { AmbientLight } from 'three'
-import { environments } from '../assets/environment/index.js'
 import Stats from 'stats.js'
 export default {
   name: 'ChixiMap',
@@ -49,10 +48,12 @@ export default {
     count: 0,
     stats: null,
     lableDiv: null,
-    nameLabel: null,
+    nameLabel1: null,
+    nameLabel2: null,
+    nameLabel3: null,
     famenzhuan: false,
-    environment: 'Venice Sunset',
-    background: false
+    environment: 'Studio Small',
+    background: true
   }),
   mounted() {
     this.initThreejs()
@@ -61,19 +62,7 @@ export default {
     initThreejs() {
       // 场景
       this.scene = new THREE.Scene()
-      const environment = environments.filter(
-        entry => entry.name === this.environment
-      )[0]
-      this.getCubeMapTexture(environment).then(({ envMap }) => {
-        if (
-          (!envMap || !this.background) &&
-          this.activeCamera === this.defaultCamera
-        ) {
-          this.scene.add(this.vignette)
-        } else {
-          this.scene.remove(this.vignette)
-        }
-
+      this.getCubeMapTexture().then(({ envMap }) => {
         this.scene.environment = envMap
         this.scene.background = this.background ? envMap : null
       })
@@ -88,7 +77,7 @@ export default {
       // 渲染器
       this.renderer = new THREE.WebGLRenderer({ antialias: true })
       this.renderer.setSize(window.innerWidth, window.innerHeight)
-      this.renderer.setClearColor('#6C7FE7')
+      this.renderer.setClearColor('#08143A')
       this.renderer.outputEncoding = THREE.sRGBEncoding
       this.pmremGenerator = new THREE.PMREMGenerator(this.renderer)
       this.pmremGenerator.compileEquirectangularShader()
@@ -136,6 +125,52 @@ export default {
           // console.info(gltf)
           this.scene.add(gltf.scene)
           this.objects.push(gltf.scene)
+          // CSS2DRender
+          const lableDiv1 = document.createElement('div')
+          lableDiv1.className = 'label'
+          lableDiv1.textContent = '初始化中'
+
+          this.nameLabel1 = new CSS2DObject(lableDiv1)
+
+          this.nameLabel1.position.set(
+            this.scene.getObjectByName('point1').position.x,
+            this.scene.getObjectByName('point1').position.y + 5,
+            this.scene.getObjectByName('point1').position.z
+          )
+
+          this.scene.add(this.nameLabel1)
+          const lableDiv2 = document.createElement('div')
+          lableDiv2.className = 'label'
+          lableDiv2.textContent = '初始化中'
+          this.nameLabel2 = new CSS2DObject(lableDiv2)
+
+          this.nameLabel2.position.set(
+            this.scene.getObjectByName('point2').position.x,
+            this.scene.getObjectByName('point2').position.y + 5,
+            this.scene.getObjectByName('point2').position.z
+          )
+
+          this.scene.add(this.nameLabel2)
+          const lableDiv3 = document.createElement('div')
+          lableDiv3.className = 'label'
+          lableDiv3.textContent = '初始化中'
+          this.nameLabel3 = new CSS2DObject(lableDiv3)
+
+          this.nameLabel3.position.set(
+            this.scene.getObjectByName('point3').position.x,
+            this.scene.getObjectByName('point3').position.y + 5,
+            this.scene.getObjectByName('point3').position.z
+          )
+
+          this.scene.add(this.nameLabel3)
+          this.labelRenderer = new CSS2DRenderer()
+          this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
+          this.labelRenderer.domElement.style.position = 'absolute'
+          this.labelRenderer.domElement.style.top = 0
+          this.labelRenderer.domElement.style.pointerEvents = 'none'
+          document
+            .getElementById('ThreeJS')
+            .appendChild(this.labelRenderer.domElement)
         },
         undefined,
         function(error) {
@@ -218,6 +253,9 @@ export default {
       this.stats.begin()
       // this.renderer.render(this.scene, this.camera)
       this.orbitControls.update()
+      if (this.labelRenderer) {
+        this.labelRenderer.render(this.scene, this.camera)
+      }
       this.renderer.render(this.scene, this.camera)
       this.stats.end()
       requestAnimationFrame(this.render)
@@ -248,15 +286,10 @@ export default {
         this.famenzhuan = false
       }
     },
-    getCubeMapTexture(environment) {
-      const { path } = environment
-
-      // no envmap
-      if (!path) return Promise.resolve({ envMap: null })
-
+    getCubeMapTexture() {
       return new Promise((resolve, reject) => {
         new RGBELoader().setDataType(THREE.UnsignedByteType).load(
-          path,
+          `${process.env.BASE_URL}environment/footprint_court_2k.hdr`,
           texture => {
             const envMap = this.pmremGenerator.fromEquirectangular(texture)
               .texture
