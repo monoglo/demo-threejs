@@ -96,16 +96,6 @@ export default {
       this.camera.position.z = 800
       this.camera.position.y = 500
 
-      // // 环境光
-      // const hlight = new THREE.AmbientLight(0xffffff, 5)
-      // this.scene.add(hlight)
-      // // var hemilight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 1.5)
-      // // this.scene.add(hemilight)
-      // // 灯光
-      // const light = new THREE.PointLight(0xffffff, 5, 120)
-      // light.position.set(-25, 5, 60)
-      // this.scene.add(light)
-
       const light1 = new THREE.AmbientLight(0xffffff, 0.65)
       light1.name = 'ambient_light'
       this.scene.add(light1)
@@ -115,7 +105,7 @@ export default {
       light2.name = 'main_light'
       this.scene.add(light2)
 
-      this.scene.add(new THREE.AxesHelper(5))
+      // this.scene.add(new THREE.AxesHelper(5))
 
       // GLTF加载器加载GLTF资源
       const loader = new GLTFLoader()
@@ -128,41 +118,47 @@ export default {
           // CSS2DRender
           const lableDiv1 = document.createElement('div')
           lableDiv1.className = 'label'
-          lableDiv1.textContent = '初始化中'
+          lableDiv1.textContent = '流量'
 
           this.nameLabel1 = new CSS2DObject(lableDiv1)
 
           this.nameLabel1.position.set(
             this.scene.getObjectByName('point1').position.x,
-            this.scene.getObjectByName('point1').position.y + 5,
+            this.scene.getObjectByName('point1').position.y + 400,
             this.scene.getObjectByName('point1').position.z
           )
 
           this.scene.add(this.nameLabel1)
+
           const lableDiv2 = document.createElement('div')
           lableDiv2.className = 'label'
-          lableDiv2.textContent = '初始化中'
+          lableDiv2.textContent = '浊度'
           this.nameLabel2 = new CSS2DObject(lableDiv2)
 
           this.nameLabel2.position.set(
             this.scene.getObjectByName('point2').position.x,
-            this.scene.getObjectByName('point2').position.y + 5,
+            this.scene.getObjectByName('point2').position.y + 400,
             this.scene.getObjectByName('point2').position.z
           )
 
           this.scene.add(this.nameLabel2)
+
           const lableDiv3 = document.createElement('div')
           lableDiv3.className = 'label'
-          lableDiv3.textContent = '初始化中'
+          lableDiv3.textContent = '流速'
           this.nameLabel3 = new CSS2DObject(lableDiv3)
 
           this.nameLabel3.position.set(
             this.scene.getObjectByName('point3').position.x,
-            this.scene.getObjectByName('point3').position.y + 5,
+            this.scene.getObjectByName('point3').position.y + 400,
             this.scene.getObjectByName('point3').position.z
           )
 
           this.scene.add(this.nameLabel3)
+          this.drawLine(this.scene.getObjectByName('point1').position, this.nameLabel1.position)
+          this.drawLine(this.scene.getObjectByName('point2').position, this.nameLabel2.position)
+          this.drawLine(this.scene.getObjectByName('point3').position, this.nameLabel3.position)
+
           this.labelRenderer = new CSS2DRenderer()
           this.labelRenderer.setSize(window.innerWidth, window.innerHeight)
           this.labelRenderer.domElement.style.position = 'absolute'
@@ -208,37 +204,6 @@ export default {
         MIDDLE: THREE.MOUSE.PAN,
         RIGHT: THREE.MOUSE.ROTATE
       }
-      // // 创建拖拽控制器
-      // this.dragControls = new DragControls(
-      //   this.objects,
-      //   this.camera,
-      //   this.renderer.domElement
-      // )
-      // 拖拽控制器拖拽事件绑定
-      // this.dragControls.addEventListener('dragstart', event => {
-      //   // event.object.material.emissive.set(0xaaaaaa)
-      //   // 拖拽过程禁用Orbit控制器
-      //   this.orbitControls.enabled = false
-      //   // 拖拽过程中止监听鼠标移动，锁定边缘高亮物体
-      //   window.removeEventListener('mousemove', this.onTouchMove)
-      //   window.removeEventListener('touchmove', this.onTouchMove)
-      //   // 拖拽过程中使提示标签不可见
-      //   var tooltip = document.querySelectorAll('.tooltip')
-      //   tooltip[0].style.display = 'none'
-      // })
-      // // 拖拽过程结束，启用轮廓生成，启用Orbit控制器
-      // this.dragControls.addEventListener('dragend', event => {
-      //   // event.object.material.emissive.set(0x000000)
-      //   window.addEventListener('mousemove', this.onTouchMove)
-      //   window.addEventListener('touchmove', this.onTouchMove)
-      //   this.onHover(event)
-      //   this.orbitControls.enabled = true
-      // })
-
-      // 初次监听鼠标移动
-      // window.addEventListener('mousemove', this.onTouchMove)
-      // window.addEventListener('touchmove', this.onTouchMove)
-
       // FPS 监控
       this.stats = new Stats()
       this.stats.showPanel(0)
@@ -260,32 +225,6 @@ export default {
       this.stats.end()
       requestAnimationFrame(this.render)
     },
-    // // 鼠标移动事件
-    // onTouchMove(event) {
-    //   var tooltip = document.querySelectorAll('.tooltip')
-    //   tooltip[0].style.left = event.pageX + 'px'
-    //   tooltip[0].style.top = event.pageY + 'px'
-    // },
-    // onHover(event) {
-    //   // this.outlinePass.selectedObjects = [event.object]
-    //   // console.info(event.object.id)
-    //   // var tooltip = document.querySelectorAll('.tooltip')
-    //   // this.tooltipText = event.object.id
-    //   // tooltip[0].style.display = 'block'
-    //   // if (event.object.name === 'valve') {
-    //   //   this.famenzhuan = true
-    //   // } else {
-    //   //   this.famenzhuan = false
-    //   // }
-    // },
-    // onHoverOff(event) {
-    //   var tooltip = document.querySelectorAll('.tooltip')
-    //   // this.outlinePass.selectedObjects = []
-    //   tooltip[0].style.display = 'none'
-    //   if (event.object.name === 'valve') {
-    //     this.famenzhuan = false
-    //   }
-    // },
     getCubeMapTexture() {
       return new Promise((resolve, reject) => {
         new RGBELoader().setDataType(THREE.UnsignedByteType).load(
@@ -301,6 +240,16 @@ export default {
           reject
         )
       })
+    },
+    drawLine(headposition, tailposition) {
+      const material = new THREE.LineBasicMaterial({ color: 0x0000ff })
+      const points = []
+      points.push(headposition)
+      points.push(tailposition)
+
+      const geometry = new THREE.BufferGeometry().setFromPoints(points)
+      const line = new THREE.Line(geometry, material)
+      this.scene.add(line)
     }
   }
 }
@@ -321,18 +270,21 @@ canvas {
   background: #c8c8c8;
   margin-left: 28px;
   padding: 10px;
-  position: absolute;
   z-index: 1000;
   /* width: 80px;
   height: 25px; */
 }
 
 .label {
-  color: #000;
-  background-color: rgba(255, 255, 255, 0.2);
-  margin-left: 28px;
-  padding: 10px;
-  position: absolute;
-  z-index: 2000;
+  width: 30px;
+  height: 30px;
+  background-color: #e5e7e9;
+  position: relative;
+  text-align: center;
+  margin: 0px;
+  font: italic bold 15px arial, sans-serif;
+  box-shadow: 0 0 0 10px #00bdfb;
+  border-radius: 200px;
+  color: #000000;
 }
 </style>
