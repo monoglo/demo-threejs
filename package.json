@@ -10,6 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "gsap": "^3.5.0",
+    "minecraft-status": "^1.1.0",
+    "net": "^1.0.2",
     "stats.js": "^0.17.0",
     "three": "^0.119.1",
     "vue": "^2.6.11",

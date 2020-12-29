@@ -53,7 +53,7 @@ export default {
     nameLabel3: null,
     famenzhuan: false,
     environment: 'Studio Small',
-    background: true
+    background: false
   }),
   mounted() {
     this.initThreejs()
