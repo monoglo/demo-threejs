@@ -23,7 +23,7 @@ const routes = [
     path: '/rocks',
     name: 'ThreeJSRocks',
     component: () =>
-      import(/* webpackChunkName: "about" */ '../views/ThreeJSRocks.vue')
+      import(/* webpackChunkName: "threejsorcks" */ '../views/ThreeJSRocks.vue')
   },
   {
     path: '/lab',
@@ -33,7 +33,12 @@ const routes = [
   {
     path: '/chixi',
     name: 'ChixiMap',
-    component: () => import(/* webpackChunkName: "lab" */ '../views/ChixiMap.vue')
+    component: () => import(/* webpackChunkName: "chiximap" */ '../views/ChixiMap.vue')
+  },
+  {
+    path: '/hulin',
+    name: 'HulinMap',
+    component: () => import(/* webpackChunkName: "hulinmap" */ '../views/HulinMap.vue')
   }
 ]
 
